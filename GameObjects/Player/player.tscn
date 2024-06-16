@@ -1,11 +1,18 @@
-[gd_scene load_steps=5 format=3 uid="uid://dr1ndt21jlqym"]
+[gd_scene load_steps=10 format=3 uid="uid://dr1ndt21jlqym"]
 
 [ext_resource type="Script" path="res://GameObjects/Player/player.gd" id="1_4jxr5"]
 [ext_resource type="Script" path="res://GameObjects/Player/smooth_camera.gd" id="2_2txdw"]
+[ext_resource type="Script" path="res://Scripts/StateMachine.gd" id="3_qra8t"]
+[ext_resource type="Script" path="res://GameObjects/Player/player_idle.gd" id="4_c1lnp"]
+[ext_resource type="Script" path="res://GameObjects/Player/player_jumping.gd" id="5_48xvy"]
+[ext_resource type="Script" path="res://GameObjects/Player/player_moving.gd" id="6_65mx3"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_f2lh8"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_tgno7"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_qruqs"]
+font_size = 64
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_4jxr5")
@@ -22,3 +29,50 @@ shape = SubResource("CapsuleShape3D_f2lh8")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_tgno7")
+
+[node name="Raycasts" type="Node3D" parent="."]
+
+[node name="HeadRaycast" type="RayCast3D" parent="Raycasts"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.507048, 0)
+target_position = Vector3(0, 0, -1)
+
+[node name="HipRaycast" type="RayCast3D" parent="Raycasts"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.388078, 0)
+target_position = Vector3(0, 0, -1)
+
+[node name="NewPositionRaycast" type="RayCast3D" parent="Raycasts"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.960341, -1.27793)
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("3_qra8t")
+initial_state = NodePath("PlayerIdle")
+
+[node name="PlayerIdle" type="Node" parent="StateMachine"]
+script = ExtResource("4_c1lnp")
+
+[node name="PlayerMoving" type="Node" parent="StateMachine"]
+script = ExtResource("6_65mx3")
+state = 1
+
+[node name="PlayerJumping" type="Node" parent="StateMachine"]
+script = ExtResource("5_48xvy")
+state = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StateLabel" type="Label" parent="PanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+mouse_filter = 1
+text = "State"
+label_settings = SubResource("LabelSettings_qruqs")
