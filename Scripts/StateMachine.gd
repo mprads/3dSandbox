@@ -9,7 +9,6 @@ var current_state: PlayerState
 
 func init(player: Player) -> void:
 	for child in get_children():
-		print(child)
 		if child is PlayerState:
 			states[child.state] = child
 			child.transition_requested.connect(_on_transition_requested)

@@ -18,6 +18,10 @@ func physics_update(delta: float) -> void:
 	if !player.is_on_floor():
 		transition_requested.emit(self, PlayerState.State.JUMPING)
 		
+	if Input.is_action_pressed("jump"):
+		player.handle_jump()
+		transition_requested.emit(self, PlayerState.State.JUMPING)
+		
 	if Input.get_vector("left", "right", "up", "down") == Vector2.ZERO:
 		transition_requested.emit(self, PlayerState.State.IDLE)
 	

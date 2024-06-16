@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dr1ndt21jlqym"]
+[gd_scene load_steps=11 format=3 uid="uid://dr1ndt21jlqym"]
 
 [ext_resource type="Script" path="res://GameObjects/Player/player.gd" id="1_4jxr5"]
 [ext_resource type="Script" path="res://GameObjects/Player/smooth_camera.gd" id="2_2txdw"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://GameObjects/Player/player_idle.gd" id="4_c1lnp"]
 [ext_resource type="Script" path="res://GameObjects/Player/player_jumping.gd" id="5_48xvy"]
 [ext_resource type="Script" path="res://GameObjects/Player/player_moving.gd" id="6_65mx3"]
+[ext_resource type="Script" path="res://GameObjects/Player/player_hanging.gd" id="7_wpcib"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_f2lh8"]
 
@@ -44,7 +45,8 @@ target_position = Vector3(0, 0, -1)
 
 [node name="NewPositionRaycast" type="RayCast3D" parent="Raycasts"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.960341, -1.27793)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -1.5)
+target_position = Vector3(0, -2, 0)
 
 [node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
 script = ExtResource("3_qra8t")
@@ -60,6 +62,10 @@ state = 1
 [node name="PlayerJumping" type="Node" parent="StateMachine"]
 script = ExtResource("5_48xvy")
 state = 2
+
+[node name="PlayerHanging" type="Node" parent="StateMachine"]
+script = ExtResource("7_wpcib")
+state = 3
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 anchors_preset = 15

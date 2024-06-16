@@ -45,14 +45,15 @@ func _input(event: InputEvent) -> void:
 
 
 func apply_gravity(delta: float) -> void:
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = jump_velocity
-
 	if not is_on_floor():
 		if velocity.y >= 0:
 			velocity.y -= jump_gravity * delta
 		else:
 			velocity.y -= fall_gravity * delta 
+
+
+func handle_jump() -> void:
+	velocity.y = jump_velocity
 
 
 func handle_movement(delta: float) -> void:
@@ -70,15 +71,35 @@ func handle_movement(delta: float) -> void:
 	move_and_slide()
 
 
-func _check_mantle() -> void:
-	if head_raycast.is_colliding() && new_position_raycast.is_colliding() && !hip_raycast:
-		pass
+func check_mantle() -> bool:
+	return !head_raycast.is_colliding() && hip_raycast.is_colliding() && new_position_raycast.is_colliding()
 
-func _handle_camera_rotation() -> void:
-	rotate_y(mouse_motion.x)
-	camera_pivot.rotate_x(mouse_motion.y)
-	camera_pivot.rotation_degrees.x = clampf(camera_pivot.rotation_degrees.x, -90, 90)
-	mouse_motion = Vector2.ZERO
+
+func handle_mantle(delta: float) -> void:
+	var new_position = new_position_raycast.get_collision_point() + Vector3(0, 1, 0)
+	var tween = create_tween()
+	tween.tween_property(self, "global_position", new_position, .75)
+	_calculate_movement_parameters()
+	await get_tree().create_timer(1).timeout
+	enable_hanging_raycast()
+	
+
+func handle_dismount(delta: float) -> void:
+	_calculate_movement_parameters()
+	await get_tree().create_timer(.5).timeout
+	enable_hanging_raycast()
+	
+
+func enable_hanging_raycast() -> void:
+	head_raycast.enabled = true
+	hip_raycast.enabled = true
+	new_position_raycast.enabled = true
+
+
+func disable_hanging_raycast() -> void:
+	head_raycast.enabled = false
+	hip_raycast.enabled = false
+	new_position_raycast.enabled = false
 
 
 func _calculate_movement_parameters() -> void:
@@ -86,3 +107,10 @@ func _calculate_movement_parameters() -> void:
 	fall_gravity = (2 * jump_height) / pow(jump_fall_time,2)
 	jump_velocity = jump_gravity * jump_peak_time
 	speed = jump_distance / (jump_peak_time + jump_fall_time)
+	
+
+func _handle_camera_rotation() -> void:
+	rotate_y(mouse_motion.x)
+	camera_pivot.rotate_x(mouse_motion.y)
+	camera_pivot.rotation_degrees.x = clampf(camera_pivot.rotation_degrees.x, -90, 90)
+	mouse_motion = Vector2.ZERO
